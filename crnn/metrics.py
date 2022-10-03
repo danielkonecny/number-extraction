@@ -7,8 +7,9 @@ class SequenceAccuracy(keras.metrics.Metric):
         super().__init__(name=name, **kwargs)
         self.total = self.add_weight(name='total', initializer='zeros')
         self.count = self.add_weight(name='count', initializer='zeros')
-                
-    def update_state(self, y_true, y_pred):
+
+    # noinspection PyUnusedLocal
+    def update_state(self, y_true, y_pred, sample_weight=None):
 
         def sparse2dense(tensor, shape):
             tensor = tf.sparse.reset_shape(tensor, shape)
@@ -50,8 +51,9 @@ class EditDistance(keras.metrics.Metric):
         super().__init__(name=name, **kwargs)
         self.total = self.add_weight(name='total', initializer='zeros')
         self.sum_distance = self.add_weight(name='sum_distance', initializer='zeros')
-                
-    def update_state(self, y_true, y_pred):
+
+    # noinspection PyUnusedLocal
+    def update_state(self, y_true, y_pred, sample_weight=None):
         y_pred_shape = tf.shape(y_pred)
         batch_size = y_pred_shape[0]
         logit_length = tf.fill([batch_size], y_pred_shape[1])      

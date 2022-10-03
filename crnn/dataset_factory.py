@@ -14,8 +14,17 @@ class NumberDatasetBuilder:
         )
         self.text_width = text_width
         self.text_height = text_height
-        self.canvas_width = canvas_width
-        self.canvas_height = canvas_height
+
+        if canvas_width is None:
+            self.canvas_width = text_width
+        else:
+            self.canvas_width = canvas_width
+
+        if canvas_height is None:
+            self.canvas_height = text_height
+        else:
+            self.canvas_height = canvas_height
+            
         self.random_position = random_position
         self.random_scale = random_scale
 
@@ -68,7 +77,7 @@ class NumberDatasetBuilder:
         return label
 
     def _data_augmentation(self, image):
-        if self.canvas_width is not None and self.canvas_height is not None:
+        if self.canvas_width != self.text_width and self.canvas_height != self.text_height:
             # Scale image of number to a smaller one.
             if self.random_scale:
                 scale = tf.random.uniform(shape=[], minval=.5, maxval=1.)
@@ -101,9 +110,6 @@ class NumberDatasetBuilder:
                 target_height=self.canvas_height,
                 target_width=self.canvas_width
             )
-        else:
-            self.canvas_width = self.text_width
-            self.canvas_height = self.text_height
 
         # Add random noise to the image.
         image = tf.math.add(
