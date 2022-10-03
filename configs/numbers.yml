@@ -1,0 +1,21 @@
+dataset_builder: &ds_builder
+    img_shape: [300, 200, 3]
+
+train:
+    dataset_builder:
+        <<: *ds_builder
+    batch_size_per_replica: 16
+    # Number of epochs to train.
+    epochs: 20
+    # TensorBoard Arguments
+    # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard#arguments_1
+    tensorboard:
+        histogram_freq: 1
+        profile_batch: 0
+
+eval:
+    dataset_builder:
+        <<: *ds_builder
+    ann_paths:
+        - '/datasets/ICDAR/2013/Challenge2_Test_Task3_gt.txt'
+    batch_size: 128
