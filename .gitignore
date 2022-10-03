@@ -4,3 +4,11 @@ __pycache__/
 .vscode/
 configs/
 models/
+
+datasets/
+.env/
+.idea/
+log/
+SavedModel/
+fonts/
+SavedModel.tgz
