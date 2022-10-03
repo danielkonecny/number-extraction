@@ -17,25 +17,40 @@ from safe_gpu import safe_gpu
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=Path, required=True, help='The config file path.')
-    parser.add_argument('--save_dir', type=Path, required=True, help='The path to save the models, logs, etc.')
+    parser.add_argument(
+        '--config',
+        type=Path,
+        required=True,
+        help='The config file path.'
+    )
+    parser.add_argument(
+        '--save_dir',
+        type=Path,
+        required=True,
+        help='The path to save the models, logs, etc.'
+    )
+    parser.add_argument(
+        '-g', '--gpu',
+        action='store_true',
+        help="Use to turn on Safe GPU command to run on a machine with multiple GPUs."
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_arguments()
 
-    if args.gpu:
-        # noinspection PyUnusedLocal
-        gpu_owner = safe_gpu.GPUOwner(placeholder_fn=safe_gpu.tensorflow_placeholder)
-
     with args.config.open() as f:
         config = yaml.load(f, Loader=yaml.Loader)['train']
     # pprint.pprint(config)
 
+    if args.gpu:
+        # noinspection PyUnusedLocal
+        gpu_owner = safe_gpu.GPUOwner(placeholder_fn=safe_gpu.tensorflow_placeholder)
+
     current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
     log_dir = args.save_dir / f'{current_time}'
-    log_dir.mkdir(exist_ok=True)
+    log_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy(args.config, log_dir / args.config.name)
 
     batch_size = config['batch_size_per_replica']
