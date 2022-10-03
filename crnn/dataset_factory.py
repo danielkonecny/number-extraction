@@ -3,7 +3,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 class NumberDatasetBuilder:
-    def __init__(self, text_width, text_height, canvas_width, canvas_height):
+    def __init__(self, text_width, text_height, canvas_width=None, canvas_height=None,
+                 random_position=False, random_scale=False):
         self.table = tf.lookup.StaticHashTable(
             tf.lookup.KeyValueTensorInitializer(
                 tf.constant(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']),
@@ -15,6 +16,8 @@ class NumberDatasetBuilder:
         self.text_height = text_height
         self.canvas_width = canvas_width
         self.canvas_height = canvas_height
+        self.random_position = random_position
+        self.random_scale = random_scale
 
     def __call__(self, count=1, batch_size=1):
         numbers_orig = tf.random.uniform(shape=[count], maxval=1_000_000_000, dtype=tf.dtypes.int32)
@@ -65,20 +68,42 @@ class NumberDatasetBuilder:
         return label
 
     def _data_augmentation(self, image):
-        # Scale image of number to a smaller one.
-        scale = tf.random.uniform(shape=[], minval=.5, maxval=1.)
-        new_height = tf.cast(scale * self.text_height, dtype=tf.dtypes.int32)
-        new_width = tf.cast(scale * self.text_width, dtype=tf.dtypes.int32)
+        if self.canvas_width is not None and self.canvas_height is not None:
+            # Scale image of number to a smaller one.
+            if self.random_scale:
+                scale = tf.random.uniform(shape=[], minval=.5, maxval=1.)
+                new_height = tf.cast(scale * self.text_height, dtype=tf.dtypes.int32)
+                new_width = tf.cast(scale * self.text_width, dtype=tf.dtypes.int32)
+            else:
+                new_height = self.text_height
+                new_width = self.text_width
 
-        # Move the number to a random position on a canvas.
-        image = tf.image.resize_with_pad(image, target_height=new_height, target_width=new_width)
-        image = tf.image.pad_to_bounding_box(
-            image,
-            offset_height=tf.random.uniform(shape=[], maxval=self.canvas_height - new_height, dtype=tf.dtypes.int32),
-            offset_width=tf.random.uniform(shape=[], maxval=self.canvas_width - new_width, dtype=tf.dtypes.int32),
-            target_height=self.canvas_height,
-            target_width=self.canvas_width
-        )
+            # Move the number to a random position on a canvas.
+            if self.random_position:
+                offset_height = tf.random.uniform(
+                    shape=[],
+                    maxval=self.canvas_height - new_height,
+                    dtype=tf.dtypes.int32
+                )
+                offset_width = tf.random.uniform(
+                    shape=[],
+                    maxval=self.canvas_width - new_width,
+                    dtype=tf.dtypes.int32
+                )
+            else:
+                offset_height = 15
+                offset_width = 10
+            image = tf.image.resize_with_pad(image, target_height=new_height, target_width=new_width)
+            image = tf.image.pad_to_bounding_box(
+                image,
+                offset_height=offset_height,
+                offset_width=offset_width,
+                target_height=self.canvas_height,
+                target_width=self.canvas_width
+            )
+        else:
+            self.canvas_width = self.text_width
+            self.canvas_height = self.text_height
 
         # Add random noise to the image.
         image = tf.math.add(

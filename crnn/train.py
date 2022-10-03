@@ -1,18 +1,16 @@
 import argparse
-import pprint
 import shutil
 from pathlib import Path
-
 import yaml
 from datetime import datetime
+
 from tensorflow import keras
+from safe_gpu import safe_gpu
 
 from dataset_factory import NumberDatasetBuilder
 from losses import CTCLoss
 from metrics import SequenceAccuracy
 from models import build_model
-
-from safe_gpu import safe_gpu
 
 
 def parse_arguments():
@@ -42,7 +40,6 @@ def main():
 
     with args.config.open() as f:
         config = yaml.load(f, Loader=yaml.Loader)['train']
-    # pprint.pprint(config)
 
     if args.gpu:
         # noinspection PyUnusedLocal
@@ -53,11 +50,11 @@ def main():
     log_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy(args.config, log_dir / args.config.name)
 
-    batch_size = config['batch_size_per_replica']
+    batch_size = config['batch_size']
 
     dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300)
-    train_ds = dataset_builder(count=50_000, batch_size=batch_size)
-    val_ds = dataset_builder(count=5_000, batch_size=batch_size)
+    train_ds = dataset_builder(count=1_000, batch_size=batch_size)
+    val_ds = dataset_builder(count=100, batch_size=batch_size)
 
     model = build_model(
         dataset_builder.num_classes,
@@ -81,5 +78,32 @@ def main():
     model.fit(train_ds, epochs=config['epochs'], callbacks=callbacks, validation_data=val_ds)
 
 
+def demonstrate():
+    import tensorflow as tf
+    from PIL import Image
+
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+    #                                        random_position=True, random_scale=True)
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+    #                                        random_position=True)
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+    #                                        random_scale=True)
+    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300)
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40)
+
+    dataset = dataset_builder(count=1, batch_size=1)
+
+    for images, numbers in dataset:
+        print(f"Batches: {images.shape}")
+        print(f"Batches: {numbers.shape}")
+        numbers = tf.sparse.to_dense(numbers)
+        for image, number in zip(images, numbers):
+            image *= 255
+            image = Image.fromarray(image.numpy().astype("uint8"))
+            image.show()
+            print(f"Number: {number}")
+
+
 if __name__ == "__main__":
     main()
+    # demonstrate()

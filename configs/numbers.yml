@@ -4,7 +4,7 @@ dataset_builder: &ds_builder
 train:
     dataset_builder:
         <<: *ds_builder
-    batch_size_per_replica: 16
+    batch_size: 16
     # Number of epochs to train.
     epochs: 20
     # TensorBoard Arguments
