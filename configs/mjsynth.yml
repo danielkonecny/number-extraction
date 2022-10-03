@@ -12,10 +12,10 @@ train:
     dataset_builder:
         <<: *ds_builder
     train_ann_paths:
-        - '/datasets/MJSynth/mnt/ramdisk/max/90kDICT32px/annotation_train.txt'
-        - '/datasets/MJSynth/mnt/ramdisk/max/90kDICT32px/annotation_val.txt'
+        - 'datasets/MJSynth/mnt/ramdisk/max/90kDICT32px/annotation_train.txt'
+        - 'datasets/MJSynth/mnt/ramdisk/max/90kDICT32px/annotation_val.txt'
     val_ann_paths:
-        - '/datasets/MJSynth/mnt/ramdisk/max/90kDICT32px/annotation_test.txt'
+        - 'datasets/MJSynth/mnt/ramdisk/max/90kDICT32px/annotation_test.txt'
     batch_size_per_replica: 256
     # Number of epochs to train.
     epochs: 20
