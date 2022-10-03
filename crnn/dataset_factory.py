@@ -121,3 +121,31 @@ class NumberDatasetBuilder:
             tf.random.uniform(shape=[2], maxval=max_signed_int, dtype=tf.dtypes.int32)
         )
         return 1 - image
+
+
+def demonstrate():
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+    #                                        random_position=True, random_scale=True)
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+    #                                        random_position=True)
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+    #                                        random_scale=True)
+    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300)
+    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40)
+
+    dataset = dataset_builder(count=1, batch_size=1)
+
+    for images, numbers in dataset:
+        print("Batch:")
+        print(f"- Images: {images.shape}")
+        print(f"- Labels: {numbers.shape}")
+        numbers = tf.sparse.to_dense(numbers)
+        for image, number in zip(images, numbers):
+            image *= 255
+            image = Image.fromarray(image.numpy().astype("uint8"))
+            image.show()
+            print(f"-- Number: {number}")
+
+
+if __name__ == "__main__":
+    demonstrate()
