@@ -1,5 +1,5 @@
 dataset_builder: &ds_builder
-    img_shape: [40, 145, 3]
+    img_shape: [300, 200, 3]
 
 train:
     dataset_builder:
@@ -16,6 +16,4 @@ train:
 eval:
     dataset_builder:
         <<: *ds_builder
-    ann_paths:
-        - '/datasets/ICDAR/2013/Challenge2_Test_Task3_gt.txt'
     batch_size: 128

@@ -1,5 +1,6 @@
-import tensorflow as tf
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+import tensorflow as tf
 
 
 class NumberDatasetBuilder:
@@ -7,7 +8,7 @@ class NumberDatasetBuilder:
                  random_position=False, random_scale=False):
         self.table = tf.lookup.StaticHashTable(
             tf.lookup.KeyValueTensorInitializer(
-                tf.constant(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']),
+                tf.constant([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
                 tf.constant([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
             ),
             default_value=-1
@@ -72,6 +73,7 @@ class NumberDatasetBuilder:
 
     def _number_to_label(self, number):
         number = tf.strings.unicode_split(number, 'UTF-8')
+        number = tf.strings.to_number(number, tf.dtypes.int32)
         label = tf.ragged.map_flat_values(self.table.lookup, number)
         label = label.to_sparse()
         return label
@@ -153,5 +155,19 @@ def demonstrate():
             print(f"-- Number: {number}")
 
 
+def export(directory, count=1):
+    directory.mkdir(parents=True, exist_ok=True)
+
+    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40)
+    dataset = dataset_builder(count=count, batch_size=count)
+
+    for images, _ in dataset:
+        for index, image in enumerate(images):
+            image *= 255
+            image = Image.fromarray(image.numpy().astype("uint8"))
+            image.save(directory / f"image{index:04d}.png")
+
+
 if __name__ == "__main__":
     demonstrate()
+    # export(Path("dataset_numbers"), 10)

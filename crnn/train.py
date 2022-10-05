@@ -52,7 +52,7 @@ def main():
 
     batch_size = config['batch_size']
 
-    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40)
+    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300)
     train_ds = dataset_builder(count=100_000, batch_size=batch_size)
     val_ds = dataset_builder(count=5_000, batch_size=batch_size)
 

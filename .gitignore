@@ -5,9 +5,10 @@ __pycache__/
 configs/mjsynth.yml
 models/
 
-datasets/
+dataset*
 .env/
 .idea/
 SavedModel/
 fonts/
 SavedModel.tgz
+MyModel
