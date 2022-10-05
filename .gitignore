@@ -1,14 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+.idea/
 
 .vscode/
-configs/mjsynth.yml
 models/
-
-dataset*
-.env/
-.idea/
-SavedModel/
-fonts/
-SavedModel.tgz
-MyModel
+datasets/
+SavedModel*

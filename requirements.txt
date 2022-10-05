@@ -1,4 +1,4 @@
-pyyaml
-tensorflow>=2.10
-Pillow==9.2.0
+pyyaml~=6.0
+tensorflow>=2.3
+Pillow~=9.2.0
 safe-gpu>=1.4
