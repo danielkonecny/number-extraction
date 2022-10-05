@@ -1,13 +1,14 @@
 import argparse
+import pprint
 import shutil
 from pathlib import Path
-import yaml
-from datetime import datetime
 
+import tensorflow as tf
+import yaml
 from tensorflow import keras
 from safe_gpu import safe_gpu
 
-from dataset_factory import NumberDatasetBuilder
+from dataset_factory import DatasetBuilder
 from losses import CTCLoss
 from metrics import SequenceAccuracy
 from models import build_model
@@ -31,11 +32,12 @@ if list(args.save_dir.iterdir()):
     raise ValueError(f'{args.save_dir} is not a empty folder')
 shutil.copy(args.config, args.save_dir / args.config.name)
 
-def main():
-    args = parse_arguments()
+strategy = tf.distribute.MirroredStrategy()
+batch_size = config['batch_size_per_replica'] * strategy.num_replicas_in_sync
 
-    with args.config.open() as f:
-        config = yaml.load(f, Loader=yaml.Loader)['train']
+dataset_builder = DatasetBuilder(**config['dataset_builder'])
+train_ds = dataset_builder(config['train_ann_paths'], batch_size, True)
+val_ds = dataset_builder(config['val_ann_paths'], batch_size, False)
 
 with strategy.scope():
     lr_schedule = keras.optimizers.schedules.CosineDecay(**config['lr_schedule'])
@@ -50,10 +52,7 @@ with strategy.scope():
         metrics=[SequenceAccuracy()]
     )
 
-    current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = args.save_dir / f'{current_time}'
-    log_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy(args.config, log_dir / args.config.name)
+model.summary()
 
 model_prefix = '{epoch}_{val_loss:.4f}_{val_sequence_accuracy:.4f}'
 model_path = f'{args.save_dir}/{model_prefix}.h5'
@@ -63,28 +62,3 @@ callbacks = [
 ]
 
 model.fit(train_ds, epochs=config['epochs'], callbacks=callbacks, validation_data=val_ds)
-
-    model = build_model(
-        dataset_builder.num_classes,
-        img_shape=config['dataset_builder']['img_shape']
-    )
-    model.compile(
-        optimizer=keras.optimizers.Adam(),
-        loss=CTCLoss(),
-        metrics=[SequenceAccuracy()]
-    )
-
-    # model.summary()
-
-    model_prefix = '{epoch}_{val_loss:.4f}_{val_sequence_accuracy:.4f}'
-    model_path = f'{log_dir}/{model_prefix}.h5'
-    callbacks = [
-        keras.callbacks.ModelCheckpoint(model_path, save_weights_only=True),
-        keras.callbacks.TensorBoard(log_dir=f'{log_dir}/logs', **config['tensorboard'])
-    ]
-
-    model.fit(train_ds, epochs=config['epochs'], callbacks=callbacks, validation_data=val_ds)
-
-
-if __name__ == "__main__":
-    main()
