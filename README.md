@@ -39,12 +39,12 @@ $ python tools/demo.py --images example/images/ --config configs/numbers3.yml --
 
 Then, You will see output like this:
 ```
-Path: example/images/word_1.png, y_pred: [b'tiredness'], probability: [0.9998626]
-Path: example/images/word_3.png, y_pred: [b'a'], probability: [0.67493004]
-Path: example/images/2_Reimbursing_64165.jpg, y_pred: [b'reimbursing'], probability: [0.990946]
-Path: example/images/word_2.png, y_pred: [b'kills'], probability: [0.9994573]
-Path: example/images/1_Paintbrushes_55044.jpg, y_pred: [b'paintbrushes'], probability: [0.9984008]
-Path: example/images/3_Creationisms_17934.jpg, y_pred: [b'creationisms'], probability: [0.99792457]
+Path: example/images/115352072.png includes number: 115352072 (probability:  99.76%).
+Path: example/images/292222036.png includes number: 292222036 (probability:  99.71%).
+Path: example/images/306092755.png includes number: 306092755 (probability:  99.20%).
+Path: example/images/477760885.png includes number: 477760885 (probability:  99.64%).
+Path: example/images/613574192.png includes number: 613574192 (probability:  99.60%).
+Path: example/images/885430380.png includes number: 885430380 (probability:  91.38%).
 ```
 
 About decode methods, sometimes the beam search method will be better than the greedy method, but it's costly.
@@ -79,11 +79,11 @@ The file contains all characters and blank labels (in the last or any place both
 
 It's an End-to-End method, so we don't need to indicate the position of the character in the image.
 
-![Paintbrushes](example/images/115352072.png)
-![Creationisms](example/images/292222036.png)
-![Reimbursing](example/images/306092755.png)
+![115352072](example/images/115352072.png)
+![292222036](example/images/292222036.png)
+![306092755](example/images/306092755.png)
 
-The labels corresponding to these three pictures are `Paintbrushes`, `Creationisms`, `Reimbursing`.
+The labels corresponding to these three pictures are `115352072`, `292222036`, `306092755`.
 
 #### Annotation file
 
@@ -93,7 +93,7 @@ We should write the image path and its corresponding label to a text file in a c
 
 - [MJSynth](./example/mjsynth_annotation.txt)
 - [ICDAR2013/2015](./example/icdar2013_annotation.txt)
-- [Simple](./example/simple_annotation.txt) such as [example.jpg label]
+- [Simple](./example/simple_annotation.txt) such as [example.png label]
 
 ### Eval
 
