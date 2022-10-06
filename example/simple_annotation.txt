@@ -1,4 +1,6 @@
-images/1_Paintbrushes_55044.jpg Paintbrushes
-images/2_Reimbursing_64165.jpg Reimbursing
-images/word_1.png Tiredness
-images/word_2.png kills
+images/115352072.png 115352072
+images/292222036.png 292222036
+images/306092755.png 306092755
+images/477760885.png 477760885
+images/613574192.png 613574192
+images/885430380.png 885430380
