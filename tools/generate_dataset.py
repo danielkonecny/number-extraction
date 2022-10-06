@@ -156,18 +156,19 @@ def demonstrate():
 
 
 def main():
-    directory = Path("datasets/numbers2")
+    directory = Path("datasets/numbers3")
     directory.mkdir(parents=True, exist_ok=True)
 
     for i in range(100, 1_000):
         new_dir = directory / f"{i // 100}" / f"{(i % 100) // 10}" / f"{(i % 10) // 1}"
         new_dir.mkdir(parents=True, exist_ok=True)
 
-    count = 10
+    count = 100_000
     file_path = directory / 'annotation_train.txt'
 
-    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300)
-    dataset = dataset_builder(count=count, batch_size=32)
+    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+                                           random_position=True, random_scale=True)
+    dataset = dataset_builder(count=count, batch_size=64)
 
     with open(file_path, 'a') as text_file:
         for images, labels in dataset:
