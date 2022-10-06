@@ -12,8 +12,7 @@ class CTCLoss(keras.losses.Loss):
             -1 (num_classes - 1).
     """
 
-    def __init__(self, logits_time_major=False, blank_index=-1,
-                 name='ctc_loss'):
+    def __init__(self, logits_time_major=False, blank_index=-1, name='ctc_loss'):
         super().__init__(name=name)
         self.logits_time_major = logits_time_major
         self.blank_index = blank_index
@@ -31,5 +30,6 @@ class CTCLoss(keras.losses.Loss):
             label_length=None,
             logit_length=logit_length,
             logits_time_major=self.logits_time_major,
-            blank_index=self.blank_index)
+            blank_index=self.blank_index
+        )
         return tf.math.reduce_mean(loss)
