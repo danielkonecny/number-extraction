@@ -32,5 +32,5 @@ eval:
     dataset_builder:
         <<: *ds_builder
     ann_paths:
-        - 'datasets/numbers/annotation_eval.txt'
+        - 'datasets/numbers/annotation_val.txt'
     batch_size: 128
