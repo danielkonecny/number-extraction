@@ -1,6 +1,8 @@
+import argparse
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 import tensorflow as tf
+from safe_gpu import safe_gpu
 
 
 class NumberDatasetBuilder:
@@ -132,14 +134,8 @@ class NumberDatasetBuilder:
 
 
 def demonstrate():
-    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
-    #                                        random_position=True, random_scale=True)
-    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
-    #                                        random_position=True)
-    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
-    #                                        random_scale=True)
-    # dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300)
-    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40)
+    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+                                           random_position=True, random_scale=True)
 
     dataset = dataset_builder(count=1, batch_size=1)
 
@@ -156,6 +152,14 @@ def demonstrate():
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--gpu', action='store_true', help="Turn on Safe GPU when run on a machine with multiple GPUs.")
+    args = parser.parse_args()
+
+    if args.gpu:
+        # noinspection PyUnusedLocal
+        gpu_owner = safe_gpu.GPUOwner(placeholder_fn=safe_gpu.tensorflow_placeholder)
+
     directory = Path("datasets/numbers3")
     directory.mkdir(parents=True, exist_ok=True)
 
