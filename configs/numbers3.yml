@@ -12,9 +12,9 @@ train:
     dataset_builder:
         <<: *ds_builder
     train_ann_paths:
-        - 'datasets/numbers2/annotation_train.txt'
+        - 'datasets/numbers3/annotation_train.txt'
     val_ann_paths:
-        - 'datasets/numbers2/annotation_val.txt'
+        - 'datasets/numbers3/annotation_val.txt'
     batch_size_per_replica: 64
     # Number of epochs to train.
     epochs: 20
@@ -32,5 +32,5 @@ eval:
     dataset_builder:
         <<: *ds_builder
     ann_paths:
-        - 'datasets/numbers2/annotation_val.txt'
+        - 'datasets/numbers3/annotation_val.txt'
     batch_size: 64
