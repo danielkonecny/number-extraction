@@ -44,6 +44,10 @@ def build_model(num_classes,
         x = preprocess(x)
 
     x = vgg_style(x)
+    x = layers.Bidirectional(
+        layers.LSTM(units=256, return_sequences=True), name='bi_lstm1')(x)
+    x = layers.Bidirectional(
+        layers.LSTM(units=256, return_sequences=True), name='bi_lstm2')(x)
     x = layers.Dense(units=num_classes, name='logits')(x)
 
     if postprocess is not None:
