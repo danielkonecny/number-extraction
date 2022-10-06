@@ -151,7 +151,7 @@ def demonstrate():
             print(f"-- Number: {number}")
 
 
-def main():
+def generate_train_samples():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', action='store_true', help="Turn on Safe GPU when run on a machine with multiple GPUs.")
     args = parser.parse_args()
@@ -189,5 +189,25 @@ def main():
                 )
 
 
+def generate_test_samples():
+    directory = Path("datasets/numbers3/test")
+    directory.mkdir(parents=True, exist_ok=True)
+
+    count = 10
+
+    dataset_builder = NumberDatasetBuilder(text_width=145, text_height=40, canvas_width=200, canvas_height=300,
+                                           random_position=True, random_scale=True)
+    dataset = dataset_builder(count=count, batch_size=32)
+
+    for images, labels in dataset:
+        labels = tf.sparse.to_dense(labels)
+        for image, label in zip(images, labels):
+            label_str = tf.strings.as_string(label)
+            label_str = tf.strings.join(label_str)
+            image *= 255
+            image = Image.fromarray(image.numpy().astype("uint8"))
+            image.save(directory / f"{label_str.numpy().decode('UTF-8')}.png")
+
+
 if __name__ == "__main__":
-    main()
+    generate_test_samples()
